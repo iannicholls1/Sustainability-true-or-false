@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sustainability True or False Quiz</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --green: #1c6b3c;
+      --orange: #ff8a00;
+      --blue: #2775d1;
+      --cream: #fff8e8;
+      --white: #ffffff;
+      --dark: #173b28;
+      --shadow: rgba(0, 0, 0, 0.16);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(255, 138, 0, 0.14), transparent 22%),
+        radial-gradient(circle at 92% 8%, rgba(28, 107, 60, 0.18), transparent 25%),
+        radial-gradient(circle at 80% 90%, rgba(39, 117, 209, 0.12), transparent 24%),
+        linear-gradient(135deg, #e9f8ef, #f8fff9);
+      color: var(--dark);
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    button {
+      font-family: inherit;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 30px;
+      padding: 20px 24px;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      border: 3px solid rgba(28, 107, 60, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: clamp(2rem, 4.5vw, 4.3rem);
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: clamp(1.15rem, 2.1vw, 1.8rem);
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .top-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .info-card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 14px 18px;
+      text-align: center;
+      font-size: clamp(1.1rem, 2vw, 1.55rem);
+      font-weight: 900;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.09);
+    }
+
+    .info-card span {
+      color: var(--green);
+    }
+
+    .game-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 22px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 36px;
+      padding: 28px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.1);
+      border: 4px solid rgba(255, 255, 255, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card::before {
+      content: "♻";
+      position: absolute;
+      right: 24px;
+      top: 10px;
+      font-size: clamp(4rem, 10vw, 9rem);
+      color: rgba(28, 107, 60, 0.08);
+      transform: rotate(12deg);
+      pointer-events: none;
+    }
+
+    .progress-wrap {
+      background: rgba(28, 107, 60, 0.12);
+      border-radius: 999px;
+      height: 18px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), var(--green));
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .question-topic {
+      text-align: center;
+      font-size: clamp(1.2rem, 2vw, 1.7rem);
+      font-weight: 900;
+      color: var(--orange);
+      position: relative;
+      z-index: 1;
+    }
+
+    .question-box {
+      background: linear-gradient(135deg, #ffffff, #f3fff6);
+      border: 5px solid rgba(28, 107, 60, 0.18);
+      border-radius: 34px;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      text-align: center;
+      box-shadow: inset 0 0 28px rgba(28, 107, 60, 0.06);
+      position: relative;
+      z-index: 1;
+    }
+
+    .question-text {
+      margin: 0;
+      font-size: clamp(1.9rem, 4vw, 4.4rem);
+      line-height: 1.16;
+      font-weight: 900;
+      color: var(--dark);
+    }
+
+    .answer-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .answer-btn {
+      min-height: 150px;
+      border: none;
+      border-radius: 34px;
+      color: white;
+      font-size: clamp(2rem, 5vw, 5rem);
+      font-weight: 1000;
+      cursor: pointer;
+      box-shadow: 0 16px 28px var(--shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
+
+    .answer-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 8px 18px var(--shadow);
+      filter: brightness(0.95);
+    }
+
+    .answer-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    .true-btn {
+      background: linear-gradient(135deg, #168b4d, #1c6b3c);
+    }
+
+    .false-btn {
+      background: linear-gradient(135deg, #ff8a00, #d95f00);
+    }
+
+    .feedback {
+      min-height: 92px;
+      background: var(--cream);
+      border-radius: 28px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: clamp(1.25rem, 2.4vw, 2.15rem);
+      line-height: 1.25;
+      font-weight: 900;
+      color: #5e3a00;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 1;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .control-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 30px;
+      font-size: clamp(1.05rem, 2vw, 1.45rem);
+      font-weight: 900;
+      color: white;
+      background: var(--green);
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.13);
+    }
+
+    .control-btn.secondary {
+      background: var(--blue);
+    }
+
+    .control-btn.orange {
+      background: var(--orange);
+    }
+
+    .start-screen,
+    .end-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 40, 22, 0.9);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-card {
+      width: min(860px, 96vw);
+      background: white;
+      border-radius: 38px;
+      padding: 38px;
+      text-align: center;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+      border: 6px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-card h2 {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: clamp(2.3rem, 5vw, 4.8rem);
+      line-height: 1.05;
+    }
+
+    .modal-card p {
+      font-size: clamp(1.25rem, 2.5vw, 2rem);
+      line-height: 1.35;
+      margin: 12px 0 24px;
+      font-weight: 700;
+    }
+
+    .big-start {
+      border: none;
+      border-radius: 999px;
+      padding: 20px 42px;
+      font-size: clamp(1.4rem, 3vw, 2.4rem);
+      font-weight: 1000;
+      color: white;
+      background: linear-gradient(135deg, var(--orange), var(--green));
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .celebrate {
+      animation: pop 0.35s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.035); }
+      100% { transform: scale(1); }
+    }
+
+    .shake {
+      animation: shake 0.28s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    @media (max-width: 800px) {
+      .top-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-btn {
+        min-height: 120px;
+      }
+
+      .question-box {
+        min-height: 180px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        padding: 14px;
+      }
+
+      .game-card {
+        padding: 18px;
+      }
+
+      .modal-card {
+        padding: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>Sustainability True or False Quiz</h1>
+      <p class="subtitle">Read carefully. Some questions are tricky.</p>
+    </header>
+
+    <section class="top-bar" aria-label="Quiz information">
+      <div class="info-card">Score: <span id="score">0</span></div>
+      <div class="info-card">Question: <span id="questionCount">1 / 12</span></div>
+      <div class="info-card">Touchscreen Ready</div>
+    </section>
+
+    <section class="game-card" id="gameCard">
+      <div class="progress-wrap" aria-label="Progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <div class="question-topic" id="questionTopic">Sustainability</div>
+
+      <div class="question-box">
+        <p class="question-text" id="questionText">Loading question...</p>
+      </div>
+
+      <div class="answer-buttons">
+        <button class="answer-btn true-btn" id="trueBtn" type="button">TRUE</button>
+        <button class="answer-btn false-btn" id="falseBtn" type="button">FALSE</button>
+      </div>
+
+      <div class="feedback" id="feedback">Touch Start Game to begin.</div>
+
+      <div class="controls">
+        <button class="control-btn secondary" id="nextBtn" type="button">Next Question</button>
+        <button class="control-btn orange" id="restartBtn" type="button">Restart</button>
+      </div>
+    </section>
+  </main>
+
+  <section class="start-screen" id="startScreen">
+    <div class="modal-card">
+      <h2>Ready to play?</h2>
+      <p>Read each sentence carefully. Choose <strong>True</strong> or <strong>False</strong>.</p>
+      <p>Watch out — some questions use words like <strong>always</strong>, <strong>never</strong> and <strong>only</strong>.</p>
+      <button class="big-start" id="startBtn" type="button">Start Game</button>
+    </div>
+  </section>
+
+  <section class="end-screen hidden" id="endScreen">
+    <div class="modal-card">
+      <h2 id="endTitle">Great work!</h2>
+      <p>Your final score is <strong><span id="finalScore">0</span> / <span id="finalTotal">12</span></strong>.</p>
+      <p id="endMessage">You practised sustainability vocabulary.</p>
+      <button class="big-start" id="playAgainBtn" type="button">Play Again</button>
+    </div>
+  </section>
+
+  <script>
+    // Entry 3 ESOL question bank.
+    // This version includes more False questions and slightly more challenging wording.
+    // To add your own question, copy this format:
+    // { text: "Your sentence here.", answer: true, topic: "Topic", feedback: "Short explanation." }
+
+    const allQuestions = [
+      {
+        text: "Recycling means using some materials again instead of throwing them away.",
+        answer: true,
+        topic: "Recycle",
+        feedback: "Recycling helps us use materials again."
+      },
+      {
+        text: "All plastic items can go in the recycling bin.",
+        answer: false,
+        topic: "Recycle",
+        feedback: "Not all plastic can be recycled. Check the local rules."
+      },
+      {
+        text: "A dirty food container should always go straight into recycling.",
+        answer: false,
+        topic: "Recycle",
+        feedback: "Containers usually need to be empty and clean."
+      },
+      {
+        text: "Food waste can sometimes be used to make compost.",
+        answer: true,
+        topic: "Compost",
+        feedback: "Some food waste can become compost."
+      },
+      {
+        text: "Compost is only made from plastic and metal.",
+        answer: false,
+        topic: "Compost",
+        feedback: "Compost is made from natural waste, such as food and plants."
+      },
+      {
+        text: "Renewable energy can come from the sun, wind and water.",
+        answer: true,
+        topic: "Renewable Energy",
+        feedback: "Sun, wind and water can be renewable energy sources."
+      },
+      {
+        text: "Coal and oil are renewable because we can use them again and again quickly.",
+        answer: false,
+        topic: "Renewable Energy",
+        feedback: "Coal and oil take a very long time to form."
+      },
+      {
+        text: "Turning off lights when you leave a room can reduce energy use.",
+        answer: true,
+        topic: "Reduce",
+        feedback: "Turning off lights saves energy."
+      },
+      {
+        text: "Leaving the tap running is a good way to save water.",
+        answer: false,
+        topic: "Water",
+        feedback: "Turning off the tap saves water."
+      },
+      {
+        text: "Taking a reusable bag to the shop can reduce plastic waste.",
+        answer: true,
+        topic: "Reuse",
+        feedback: "Reusable bags can reduce single-use plastic."
+      },
+      {
+        text: "Eco-friendly means something is always perfect for the planet.",
+        answer: false,
+        topic: "Eco-friendly",
+        feedback: "Eco-friendly means better for the environment, but not always perfect."
+      },
+      {
+        text: "A community garden can help people grow food and work together.",
+        answer: true,
+        topic: "Community Garden",
+        feedback: "Community gardens can bring people together."
+      },
+      {
+        text: "A carbon footprint is only about the size of your feet.",
+        answer: false,
+        topic: "Carbon Footprint",
+        feedback: "A carbon footprint is about how our actions affect the planet."
+      },
+      {
+        text: "Walking, cycling or using public transport can reduce pollution.",
+        answer: true,
+        topic: "Transport",
+        feedback: "These choices can reduce pollution."
+      },
+      {
+        text: "Batteries should usually be put in any normal bin.",
+        answer: false,
+        topic: "Waste",
+        feedback: "Batteries need special recycling."
+      },
+      {
+        text: "Using a bottle again is an example of reusing.",
+        answer: true,
+        topic: "Reuse",
+        feedback: "Reuse means using something again."
+      },
+      {
+        text: "Reducing waste means buying more things and throwing more away.",
+        answer: false,
+        topic: "Reduce",
+        feedback: "Reducing waste means making less rubbish."
+      },
+      {
+        text: "Paper with lots of food or grease on it is always easy to recycle.",
+        answer: false,
+        topic: "Paper",
+        feedback: "Food and grease can make paper harder to recycle."
+      },
+      {
+        text: "Glass bottles and jars can often be recycled.",
+        answer: true,
+        topic: "Glass",
+        feedback: "Many glass bottles and jars can be recycled."
+      },
+      {
+        text: "Planting trees can help the environment, but it does not solve every problem.",
+        answer: true,
+        topic: "Environment",
+        feedback: "Trees help, but we also need to reduce waste and pollution."
+      },
+      {
+        text: "The environment means only forests and animals, not people or towns.",
+        answer: false,
+        topic: "Environment",
+        feedback: "The environment is the world around us, including people and towns."
+      },
+      {
+        text: "Buying only what we need can help reduce waste.",
+        answer: true,
+        topic: "Reduce",
+        feedback: "Buying less can mean throwing away less."
+      },
+      {
+        text: "Litter in rivers is safe because water makes it disappear.",
+        answer: false,
+        topic: "Wildlife",
+        feedback: "Litter can harm rivers, animals and people."
+      },
+      {
+        text: "Solar panels use energy from the sun.",
+        answer: true,
+        topic: "Energy",
+        feedback: "Solar panels use sunlight to make energy."
+      },
+      {
+        text: "Single-use means we use something many times.",
+        answer: false,
+        topic: "Vocabulary",
+        feedback: "Single-use means it is used once and then thrown away."
+      },
+      {
+        text: "If something is recyclable, it should still be placed in the correct bin.",
+        answer: true,
+        topic: "Recycle",
+        feedback: "Using the correct bin helps recycling work."
+      },
+      {
+        text: "Reusing an item is usually better than throwing it away after one use.",
+        answer: true,
+        topic: "Reuse",
+        feedback: "Reusing can help reduce waste."
+      },
+      {
+        text: "Saving energy at home or college can help reduce pollution.",
+        answer: true,
+        topic: "Energy",
+        feedback: "Using less energy can reduce pollution."
+      },
+      {
+        text: "Recycling means we do not need to reduce or reuse anything.",
+        answer: false,
+        topic: "Recycle",
+        feedback: "Reduce, reuse and recycle all matter."
+      },
+      {
+        text: "If a product says green, it is always eco-friendly.",
+        answer: false,
+        topic: "Eco-friendly",
+        feedback: "Some labels can be confusing. We should check carefully."
+      }
+    ];
+
+    const QUESTIONS_PER_GAME = 12;
+
+    const scoreEl = document.getElementById("score");
+    const questionCountEl = document.getElementById("questionCount");
+    const questionTopicEl = document.getElementById("questionTopic");
+    const questionTextEl = document.getElementById("questionText");
+    const feedbackEl = document.getElementById("feedback");
+    const progressBar = document.getElementById("progressBar");
+    const gameCard = document.getElementById("gameCard");
+
+    const trueBtn = document.getElementById("trueBtn");
+    const falseBtn = document.getElementById("falseBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const startBtn = document.getElementById("startBtn");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+
+    const startScreen = document.getElementById("startScreen");
+    const endScreen = document.getElementById("endScreen");
+    const finalScoreEl = document.getElementById("finalScore");
+    const finalTotalEl = document.getElementById("finalTotal");
+    const endTitleEl = document.getElementById("endTitle");
+    const endMessageEl = document.getElementById("endMessage");
+
+    let quizQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getBalancedQuestions() {
+      const trueQuestions = shuffle(allQuestions.filter(q => q.answer === true));
+      const falseQuestions = shuffle(allQuestions.filter(q => q.answer === false));
+
+      // A 12-question game with more False questions: 7 False and 5 True.
+      const selected = [
+        ...falseQuestions.slice(0, 7),
+        ...trueQuestions.slice(0, 5)
+      ];
+
+      return shuffle(selected);
+    }
+
+    function startGame() {
+      quizQuestions = getBalancedQuestions();
+      currentIndex = 0;
+      score = 0;
+      answered = false;
+
+      scoreEl.textContent = score;
+      finalTotalEl.textContent = quizQuestions.length;
+      startScreen.classList.add("hidden");
+      endScreen.classList.add("hidden");
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const question = quizQuestions[currentIndex];
+      answered = false;
+
+      questionTextEl.textContent = question.text;
+      questionTopicEl.textContent = question.topic;
+      questionCountEl.textContent = `${currentIndex + 1} / ${quizQuestions.length}`;
+      feedbackEl.textContent = "Choose True or False.";
+      progressBar.style.width = `${(currentIndex / quizQuestions.length) * 100}%`;
+
+      trueBtn.disabled = false;
+      falseBtn.disabled = false;
+      trueBtn.style.opacity = "1";
+      falseBtn.style.opacity = "1";
+      nextBtn.textContent = currentIndex === quizQuestions.length - 1 ? "Finish Quiz" : "Next Question";
+    }
+
+    function answerQuestion(userAnswer) {
+      if (answered) return;
+
+      answered = true;
+      const question = quizQuestions[currentIndex];
+      const isCorrect = userAnswer === question.answer;
+
+      trueBtn.disabled = true;
+      falseBtn.disabled = true;
+
+      if (isCorrect) {
+        score++;
+        scoreEl.textContent = score;
+        feedbackEl.textContent = `✅ Correct. ${question.feedback}`;
+        gameCard.classList.remove("shake");
+        gameCard.classList.add("celebrate");
+      } else {
+        feedbackEl.textContent = `❌ Not quite. ${question.feedback}`;
+        gameCard.classList.remove("celebrate");
+        gameCard.classList.add("shake");
+      }
+
+      if (userAnswer === true) {
+        falseBtn.style.opacity = "0.45";
+      } else {
+        trueBtn.style.opacity = "0.45";
+      }
+
+      setTimeout(() => {
+        gameCard.classList.remove("celebrate", "shake");
+      }, 400);
+
+      progressBar.style.width = `${((currentIndex + 1) / quizQuestions.length) * 100}%`;
+    }
+
+    function nextQuestion() {
+      if (!answered) {
+        feedbackEl.textContent = "Choose True or False first.";
+        return;
+      }
+
+      if (currentIndex < quizQuestions.length - 1) {
+        currentIndex++;
+        showQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      finalScoreEl.textContent = score;
+      finalTotalEl.textContent = quizQuestions.length;
+
+      if (score >= 10) {
+        endTitleEl.textContent = "Excellent!";
+        endMessageEl.textContent = "You read carefully and understood the tricky questions.";
+      } else if (score >= 7) {
+        endTitleEl.textContent = "Good work!";
+        endMessageEl.textContent = "You practised important sustainability words.";
+      } else {
+        endTitleEl.textContent = "Good try!";
+        endMessageEl.textContent = "Play again and watch for tricky words like always, never and only.";
+      }
+
+      endScreen.classList.remove("hidden");
+    }
+
+    trueBtn.addEventListener("click", () => answerQuestion(true));
+    falseBtn.addEventListener("click", () => answerQuestion(false));
+    nextBtn.addEventListener("click", nextQuestion);
+    restartBtn.addEventListener("click", startGame);
+    startBtn.addEventListener("click", startGame);
+    playAgainBtn.addEventListener("click", startGame);
+
+    // Keyboard support for testing on a normal computer.
+    document.addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+      if (key === "t") answerQuestion(true);
+      if (key === "f") answerQuestion(false);
+      if (key === "enter") nextQuestion();
+    });
+
+    // Prepare the first question behind the start screen.
+    quizQuestions = getBalancedQuestions();
+    showQuestion();
+  </script>
+</body>
+</html>
